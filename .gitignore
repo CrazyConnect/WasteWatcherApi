@@ -17,3 +17,4 @@
 /node_modules
 /app/Resources/assets/rev-manifest.json
 /behat.yml
+/composer.lock
