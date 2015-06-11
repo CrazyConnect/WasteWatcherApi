@@ -1,7 +1,6 @@
 Feature: Access to the api
 
   Scenario: Get response
-    When I request "GET /api/"
-    Then I get a "200" response
-     And the "say" property exists
-     And the "say" property contains 2 items
+    Given I prepare a GET request on "/api"
+    When I send the request
+    Then I should receive a 200 response
