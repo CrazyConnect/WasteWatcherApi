@@ -1,339 +1,21 @@
 <?php
 
-use Behat\Behat\Context\ClosuredContextInterface;
-use Behat\Behat\Context\TranslatedContextInterface;
-use Behat\Behat\Context\Context;
+use Knp\FriendlyContexts\Context\ApiContext;
 use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\BadResponseException;
-
-
-/**
- * Class Adapted from: https://github.com/philsturgeon/build-apis-you-wont-hate/blob/master/chapter12/app/tests/behat/features/bootstrap/FeatureContext.php
- *
- * Original credits to Phil Sturgeon (https://twitter.com/philsturgeon)
- * and Ben Corlett (https://twitter.com/ben_corlett).
- */
-class ApiFeatureContext implements Context
+class ApiFeatureContext extends ApiContext
 {
-    /**
-     * The Guzzle HTTP Client.
-     */
-    protected $client;
 
-    /**
-     * The current resource
-     */
-    protected $resource;
+    protected $scope;
 
-    /**
-     * The request payload
-     */
-    protected $requestPayload;
-
-    /**
-     * The Guzzle HTTP Response.
-     */
-    protected $response;
-
-    /**
-     * The decoded response object.
-     */
     protected $responsePayload;
 
     /**
-     * The current scope within the response payload
-     * which conditions are asserted against.
+     * @Then /^print the last response$/
      */
-    protected $scope;
-
-    /**
-     * Initializes context.
-     * Every scenario gets it's own context object.
-     *
-     * @param array $parameters context parameters (set them up through behat.yml)
-     */
-    public function __construct(array $parameters)
+    public function printTheLastResponse()
     {
-        $config = isset($parameters['guzzle']) && is_array($parameters['guzzle']) ? $parameters['guzzle'] : [];
-
-        $config['base_uri'] = $parameters['base_uri'];
-        $this->client = new Client($config);
-    }
-
-    /**
-     * @Given /^I have the payload:$/
-     */
-    public function iHaveThePayload(PyStringNode $requestPayload)
-    {
-        $this->requestPayload = $requestPayload;
-    }
-
-    /**
-     * @When /^I request "(GET|PUT|POST|DELETE) ([^"]*)"$/
-     */
-    public function iRequest($httpMethod, $resource)
-    {
-        $this->resource = $resource;
-
-        $method = strtolower($httpMethod);
-
-        try {
-            switch ($httpMethod) {
-                case 'PUT':
-                case 'POST':
-                    $this->response = $this
-                        ->client
-                        ->$method($resource, null, $this->requestPayload);
-                    break;
-
-                default:
-                    $this->response = $this
-                        ->client
-                        ->$method($resource);
-            }
-        } catch (BadResponseException $e) {
-
-            $response = $e->getResponse();
-
-            // Sometimes the request will fail, at which point we have
-            // no response at all. Let Guzzle give an error here, it's
-            // pretty self-explanatory.
-            if ($response === null) {
-                throw $e;
-            }
-
-            $this->response = $e->getResponse();
-        }
-    }
-
-    /**
-     * @Then /^I get a "([^"]*)" response$/
-     */
-    public function iGetAResponse($statusCode)
-    {
-        $response = $this->getResponse();
-        $contentType = $response->getHeaderLine('Content-Type');
-        if ($contentType === 'application/json') {
-            $bodyOutput = $response->getBody();
-        } else {
-            $bodyOutput = 'Output is '.$contentType.', which is not JSON and is therefore scary. Run the request manually.';
-        }
-        PHPUnit_Framework_Assert::assertSame((int) $statusCode, (int) $this->getResponse()->getStatusCode(), $bodyOutput);
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property equals "([^"]*)"$/
-     */
-    public function thePropertyEquals($property, $expectedValue)
-    {
-        $payload = $this->getScopePayload();
-        $actualValue = $this->arrayGet($payload, $property);
-
-        PHPUnit_Framework_Assert::assertEquals(
-            $actualValue,
-            $expectedValue,
-            "Asserting the [$property] property in current scope equals [$expectedValue]: ".json_encode($payload)
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property exists$/
-     */
-    public function thePropertyExists($property)
-    {
-        $payload = $this->getScopePayload();
-
-        $message = sprintf(
-            'Asserting the [%s] property exists in the scope [%s]: %s',
-            $property,
-            $this->scope,
-            json_encode($payload)
-        );
-
-        if (is_object($payload)) {
-            PHPUnit_Framework_Assert::assertTrue(array_key_exists($property, get_object_vars($payload)), $message);
-
-        } else {
-            PHPUnit_Framework_Assert::assertTrue(array_key_exists($property, $payload), $message);
-        }
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property is an array$/
-     */
-    public function thePropertyIsAnArray($property)
-    {
-        $payload = $this->getScopePayload();
-
-        $actualValue = $this->arrayGet($payload, $property);
-
-        PHPUnit_Framework_Assert::assertTrue(
-            is_array($actualValue),
-            "Asserting the [$property] property in current scope [{$this->scope}] is an array: ".json_encode($payload)
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property is an object$/
-     */
-    public function thePropertyIsAnObject($property)
-    {
-        $payload = $this->getScopePayload();
-
-        $actualValue = $this->arrayGet($payload, $property);
-
-        PHPUnit_Framework_Assert::assertTrue(
-            is_object($actualValue),
-            "Asserting the [$property] property in current scope [{$this->scope}] is an object: ".json_encode($payload)
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property is an empty array$/
-     */
-    public function thePropertyIsAnEmptyArray($property)
-    {
-        $payload = $this->getScopePayload();
-        $scopePayload = $this->arrayGet($payload, $property);
-
-        PHPUnit_Framework_Assert::assertTrue(
-            is_array($scopePayload) and $scopePayload === [],
-            "Asserting the [$property] property in current scope [{$this->scope}] is an empty array: ".json_encode($payload)
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property contains (\d+) items$/
-     */
-    public function thePropertyContainsItems($property, $count)
-    {
-        $payload = $this->getScopePayload();
-
-        PHPUnit_Framework_Assert::assertCount(
-            $count,
-            $this->arrayGet($payload, $property),
-            "Asserting the [$property] property contains [$count] items: ".json_encode($payload)
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property is an integer$/
-     */
-    public function thePropertyIsAnInteger($property)
-    {
-        $payload = $this->getScopePayload();
-
-        PHPUnit_Framework_Assert::isType(
-            'int',
-            $this->arrayGet($payload, $property),
-            "Asserting the [$property] property in current scope [{$this->scope}] is an integer: ".json_encode($payload)
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property is a string$/
-     */
-    public function thePropertyIsAString($property)
-    {
-        $payload = $this->getScopePayload();
-
-        PHPUnit_Framework_Assert::isType(
-            'string',
-            $this->arrayGet($payload, $property),
-            "Asserting the [$property] property in current scope [{$this->scope}] is a string: ".json_encode($payload)
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property is a string equalling "([^"]*)"$/
-     */
-    public function thePropertyIsAStringEqualling($property, $expectedValue)
-    {
-        $payload = $this->getScopePayload();
-
-        $this->thePropertyIsAString($property);
-
-        $actualValue = $this->arrayGet($payload, $property);
-
-        PHPUnit_Framework_Assert::assertSame(
-            $actualValue,
-            $expectedValue,
-            "Asserting the [$property] property in current scope [{$this->scope}] is a string equalling [$expectedValue]."
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property is a boolean$/
-     */
-    public function thePropertyIsABoolean($property)
-    {
-        $payload = $this->getScopePayload();
-
-        PHPUnit_Framework_Assert::assertTrue(
-            gettype($this->arrayGet($payload, $property)) == 'boolean',
-            "Asserting the [$property] property in current scope [{$this->scope}] is a boolean."
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property is a boolean equalling "([^"]*)"$/
-     */
-    public function thePropertyIsABooleanEqualling($property, $expectedValue)
-    {
-        $payload = $this->getScopePayload();
-        $actualValue = $this->arrayGet($payload, $property);
-
-        if (! in_array($expectedValue, ['true', 'false'])) {
-            throw new \InvalidArgumentException("Testing for booleans must be represented by [true] or [false].");
-        }
-
-        $this->thePropertyIsABoolean($property);
-
-        PHPUnit_Framework_Assert::assertSame(
-            $actualValue,
-            $expectedValue == 'true',
-            "Asserting the [$property] property in current scope [{$this->scope}] is a boolean equalling [$expectedValue]."
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property is a integer equalling "([^"]*)"$/
-     */
-    public function thePropertyIsAIntegerEqualling($property, $expectedValue)
-    {
-        $payload = $this->getScopePayload();
-        $actualValue = $this->arrayGet($payload, $property);
-
-        $this->thePropertyIsAnInteger($property);
-
-        PHPUnit_Framework_Assert::assertSame(
-            $actualValue,
-            (int) $expectedValue,
-            "Asserting the [$property] property in current scope [{$this->scope}] is an integer equalling [$expectedValue]."
-        );
-    }
-
-    /**
-     * @Given /^the "([^"]*)" property is either:$/
-     */
-    public function thePropertyIsEither($property, PyStringNode $options)
-    {
-        $payload = $this->getScopePayload();
-        $actualValue = $this->arrayGet($payload, $property);
-
-        $valid = explode("\n", (string) $options);
-
-        PHPUnit_Framework_Assert::assertTrue(
-            in_array($actualValue, $valid),
-            sprintf(
-                "Asserting the [%s] property in current scope [{$this->scope}] is in array of valid options [%s].",
-                $property,
-                implode(', ', $valid)
-            )
-        );
+        echo $this->getResponse();
     }
 
     /**
@@ -343,7 +25,6 @@ class ApiFeatureContext implements Context
     {
         $this->scope = "{$scope}.0";
     }
-
     /**
      * @Given /^scope into the "([^"]*)" property$/
      */
@@ -363,33 +44,36 @@ class ApiFeatureContext implements Context
     }
 
     /**
+     * @Given /^the "([^"]*)" property exists$/
+     */
+    public function thePropertyExists($property)
+    {
+        $payload = $this->getScopePayload();
+
+        $message = sprintf(
+            'Asserting the [%s] property exists in the scope [%s]: %s',
+            $property,
+            $this->scope,
+            json_encode($payload)
+        );
+
+        /**
+         * @var Knp\FriendlyContexts\Utils\Asserter $asserter
+         */
+        $asserter = $this->getAsserter();
+        if (is_object($payload)) {
+            $asserter->assert(array_key_exists($property, get_object_vars($payload)), $message);
+        } else {
+            $asserter->assert(array_key_exists($property, $payload), $message);
+        }
+    }
+
+    /**
      * @Given /^reset scope$/
      */
     public function resetScope()
     {
         $this->scope = null;
-    }
-
-    /**
-     * @Transform /^(\d+)$/
-     */
-    public function castStringToNumber($string)
-    {
-        return intval($string);
-    }
-
-    /**
-     * Checks the response exists and returns it.
-     *
-     * @return  GuzzleHttp\Psr7\Response
-     */
-    protected function getResponse()
-    {
-        if (! $this->response) {
-            throw new Exception("You must first make a request to check a response.");
-        }
-
-        return $this->response;
     }
 
     /**
@@ -401,10 +85,8 @@ class ApiFeatureContext implements Context
     {
         if (! $this->responsePayload) {
             $json = json_decode($this->getResponse()->getBody(true));
-
             if (json_last_error() !== JSON_ERROR_NONE) {
                 $message = 'Failed to decode JSON body ';
-
                 switch (json_last_error()) {
                     case JSON_ERROR_DEPTH:
                         $message .= '(Maximum stack depth exceeded).';
@@ -425,13 +107,10 @@ class ApiFeatureContext implements Context
                         $message .= '(Unknown error).';
                         break;
                 }
-
-                throw new Exception($message);
+                throw new \Exception($message);
             }
-
             $this->responsePayload = $json;
         }
-
         return $this->responsePayload;
     }
 
@@ -444,11 +123,9 @@ class ApiFeatureContext implements Context
     protected function getScopePayload()
     {
         $payload = $this->getResponsePayload();
-
         if (! $this->scope) {
             return $payload;
         }
-
         return $this->arrayGet($payload, $this->scope);
     }
 
@@ -467,19 +144,15 @@ class ApiFeatureContext implements Context
         if (is_null($key)) {
             return $array;
         }
-
         // if (isset($array[$key])) {
         //     return $array[$key];
         // }
-
         foreach (explode('.', $key) as $segment) {
-
             if (is_object($array)) {
                 if (! isset($array->{$segment})) {
                     return;
                 }
                 $array = $array->{$segment};
-
             } elseif (is_array($array)) {
                 if (! array_key_exists($segment, $array)) {
                     return;
@@ -487,7 +160,6 @@ class ApiFeatureContext implements Context
                 $array = $array[$segment];
             }
         }
-
         return $array;
     }
 }

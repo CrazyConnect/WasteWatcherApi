@@ -1,17 +1,22 @@
 default:
   suites:
-    my_suite:
-      contexts:
-        - FeatureContext
-        - ApiFeatureContext:
-            parameters:
-              base_uri: ~
-        - Behat\MinkExtension\Context\MinkContext
+      api_features:
+          paths:    [ %paths.base%/features/api ]
+          contexts: [ ApiFeatureContext ]
+      web_features:
+          paths:    [ %paths.base%/features/web ]
+          contexts: [ Behat\MinkExtension\Context\MinkContext ]
+      webapp_features:
+          paths:    [ %paths.base%/features/webapp ]
+          contexts: [ Behat\MinkExtension\Context\MinkContext ]
   gherkin:
     filters:
       tags: ~@ignore
   extensions:
     Behat\Symfony2Extension: ~
+    Knp\FriendlyContexts\Extension:
+        api:
+            base_url: ~
     Behat\MinkExtension:
       sessions:
         default:
