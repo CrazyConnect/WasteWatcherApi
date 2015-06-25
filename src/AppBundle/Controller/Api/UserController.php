@@ -26,7 +26,7 @@ class UserController extends Controller
         $user = new \stdClass();
         $user->username = "coucou";
         $obj = new \stdClass();
-        $obj->data = [$user, clone $user];
+        $obj->data = json_decode($this->get("serializer")->serialize($this->getDoctrine()->getRepository("AppBundle:User")->findAll(), 'json'));
         $obj->debugQueryString = $debugQueryString;
         return new JsonResponse($obj);
     }

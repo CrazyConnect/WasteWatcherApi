@@ -1,0 +1,10 @@
+AppBundle\Entity\User:
+    user{1..10}:
+        Username: user<current()>
+        PlainPassword: user<current()>
+        Roles: [ROLE_USER]
+        Email: <safeEmail()>
+        Lon: 3
+        Lat: 3
+        Hashtag: test
+        Enabled: true

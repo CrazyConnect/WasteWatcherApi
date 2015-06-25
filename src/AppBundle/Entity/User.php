@@ -2,36 +2,47 @@
 
 namespace AppBundle\Entity;
 
+
+use FOS\UserBundle\Entity\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * User
  *
  * @ORM\Table()
  * @ORM\Entity(repositoryClass="AppBundle\Entity\UserRepository")
+ * @Serializer\ExclusionPolicy("all")
  */
-class User
+class User extends BaseUser
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer")
      * @ORM\Id
+     * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
+    protected $id;
+
+    public function __construct()
+    {
+        parent::__construct();
+        // your own logic
+    }
 
     /**
      * @var string
      *
-     * @ORM\Column(name="username", type="string", length=255)
+     * @Serializer\Type("string")
+     * @Serializer\Expose
      */
-    private $username;
+    protected $username;
 
     /**
      * @var float
      *
      * @ORM\Column(name="lon", type="float")
+     * @Serializer\Type("float")
+     * @Serializer\Expose
      */
     private $lon;
 
@@ -39,6 +50,8 @@ class User
      * @var float
      *
      * @ORM\Column(name="lat", type="float")
+     * @Serializer\Type("float")
+     * @Serializer\Expose
      */
     private $lat;
 
@@ -46,6 +59,8 @@ class User
      * @var string
      *
      * @ORM\Column(name="hashtag", type="string", length=255)
+     * @Serializer\Type("string")
+     * @Serializer\Expose
      */
     private $hashtag;
 
@@ -71,16 +86,6 @@ class User
         $this->username = $username;
 
         return $this;
-    }
-
-    /**
-     * Get username
-     *
-     * @return string 
-     */
-    public function getUsername()
-    {
-        return $this->username;
     }
 
     /**
