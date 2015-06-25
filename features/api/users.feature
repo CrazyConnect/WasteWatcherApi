@@ -15,6 +15,9 @@ Feature: Access to the api
     """
 
   Scenario: Show an user
+    Given the following users:
+      | username |
+      | joe86    |
     Given I prepare a GET request on "/api/users/joe86"
     When I send the request
     Then print the last response

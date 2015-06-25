@@ -63,8 +63,10 @@ class ApiFeatureContext extends ApiContext
         $asserter = $this->getAsserter();
         if (is_object($payload)) {
             $asserter->assert(array_key_exists($property, get_object_vars($payload)), $message);
-        } else {
+        } else if (is_array($payload)){
             $asserter->assert(array_key_exists($property, $payload), $message);
+        } else {
+            throw new \Exception("No property inside this object");
         }
     }
 

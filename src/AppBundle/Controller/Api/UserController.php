@@ -38,12 +38,9 @@ class UserController extends Controller
     public function showAction($username)
     {
 
-        $user = new \stdClass();
-        $user->username = $username;
-        $user->lon = "1.333";
-        $user->lat = "42.4242";
+        $user = $this->getDoctrine()->getRepository("AppBundle:User")->findOneBy(['username' => $username]);
         $obj = new \stdClass();
-        $obj->data = $user;
+        $obj->data = json_decode($this->get("serializer")->serialize($user, 'json'));
         return new JsonResponse($obj);
     }
 }
