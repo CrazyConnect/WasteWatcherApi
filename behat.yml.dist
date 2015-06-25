@@ -1,8 +1,13 @@
 default:
+  calls:
+      error_reporting: 16384
   suites:
       api_features:
           paths:    [ %paths.base%/features/api ]
-          contexts: [ ApiFeatureContext ]
+          contexts:
+            - FeatureContext
+            - ApiFeatureContext
+            - Knp\FriendlyContexts\Context\EntityContext
       web_features:
           paths:    [ %paths.base%/features/web ]
           contexts: [ Behat\MinkExtension\Context\MinkContext ]
@@ -15,8 +20,11 @@ default:
   extensions:
     Behat\Symfony2Extension: ~
     Knp\FriendlyContexts\Extension:
+        entities:
+            namespaces:
+                - AppBundle
         api:
-            base_url: ~
+            base_url: 'http://localhost:8000'
     Behat\MinkExtension:
       sessions:
         default:

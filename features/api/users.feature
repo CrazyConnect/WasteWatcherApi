@@ -1,5 +1,8 @@
 Feature: Access to the api
 
+  Background:
+    Given there is 10 users
+
   Scenario: List users
     Given I prepare a GET request on "/api/users"
     When I send the request
