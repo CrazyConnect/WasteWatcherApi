@@ -2,6 +2,7 @@
 
 namespace AppBundle\Controller\Api;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -22,11 +23,14 @@ class UserController extends Controller
     public function indexAction(Request $request)
     {
         $debugQueryString = $request->getQueryString();
-
-        $user = new \stdClass();
-        $user->username = "coucou";
+        $users = null;
+        if ($this->isBoxSearchAction($request)) {
+            $users = $this->getDoctrine()->getRepository("AppBundle:User")->findBy(['lon' => $request->get('lon1'), 'lat' => $request->get('lat1')]);
+        } else {
+            $users = $this->getDoctrine()->getRepository("AppBundle:User")->findAll();
+        }
         $obj = new \stdClass();
-        $obj->data = json_decode($this->get("serializer")->serialize($this->getDoctrine()->getRepository("AppBundle:User")->findAll(), 'json'));
+        $obj->data = json_decode($this->get("serializer")->serialize($users, 'json'));
         $obj->debugQueryString = $debugQueryString;
         return new JsonResponse($obj);
     }
@@ -42,5 +46,9 @@ class UserController extends Controller
         $obj = new \stdClass();
         $obj->data = json_decode($this->get("serializer")->serialize($user, 'json'));
         return new JsonResponse($obj);
+    }
+
+    protected function isBoxSearchAction(Request $request) {
+        return $request->get('lat1') && $request->get('lon1') && $request->get('lat2') && $request->get('lon2');
     }
 }
