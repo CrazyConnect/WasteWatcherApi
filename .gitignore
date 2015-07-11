@@ -18,3 +18,4 @@
 /app/Resources/assets/rev-manifest.json
 /behat.yml
 /composer.lock
+/app/config/deploy.rb
