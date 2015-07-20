@@ -2,7 +2,7 @@ AppBundle\Entity\User:
     super:
         Username: super
         PlainPassword: super
-        Roles: [ROLE_ADMIN]
+        Roles: [ROLE_SUPER_ADMIN]
         Email: <safeEmail()>
         Enabled: true
         deviceIds: [0,1]
