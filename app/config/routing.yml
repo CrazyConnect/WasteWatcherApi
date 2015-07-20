@@ -5,3 +5,11 @@ app_web:
 app_api:
     resource: "@AppBundle/Controller/Api/"
     type:     annotation
+
+app_api_doc:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /doc/api
+
+_main:
+    prefix:   /api
+    resource: routing_api.yml

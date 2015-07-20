@@ -1,0 +1,6 @@
+AppBundle\Entity\ItemList:
+
+    ItemList{1..2}:
+        Name: ItemList<current()>
+        User: @user
+

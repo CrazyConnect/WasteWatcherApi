@@ -1,10 +1,22 @@
 AppBundle\Entity\User:
-    user{1..10}:
+    super:
+        Username: super
+        PlainPassword: super
+        Roles: [ROLE_ADMIN]
+        Email: <safeEmail()>
+        Enabled: true
+        deviceIds: [0,1]
+    user:
+        Username: user
+        PlainPassword: user
+        Roles: [ROLE_API]
+        Email: <safeEmail()>
+        Enabled: true
+        deviceIds: [0,1]
+    user{1..2}:
         Username: user<current()>
         PlainPassword: user<current()>
-        Roles: [ROLE_USER]
+        Roles: [ROLE_API]
         Email: <safeEmail()>
-        Lon: 3
-        Lat: 3
-        Hashtag: test
         Enabled: true
+        deviceIds: [0,1]

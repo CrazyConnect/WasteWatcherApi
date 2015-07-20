@@ -19,3 +19,15 @@ services:
     templating.asset_version_resolver:
         class: AppBundle\Templating\AssetVersionResolver
         arguments: ["%kernel.root_dir%"]
+
+    ionic_notifier.notifier:
+       class: AppBundle\Helper\IonicNotification
+       arguments: ["%ionic_app_id%","%ionic_app_key%"]
+
+    AppBundle.Command.RemindCommand :
+        class: AppBundle\Command\RemindCommand
+        calls:
+          - [setEntityManager,["@doctrine.orm.default_entity_manager"]]
+          - [setNotificationService,["@ionic_notifier.notifier"]]
+        tags:
+          -  { name: console.command }

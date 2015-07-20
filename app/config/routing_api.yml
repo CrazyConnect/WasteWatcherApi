@@ -1,0 +1,15 @@
+users:
+    type:     rest
+    resource: AppBundle\Controller\Api\UserController
+
+lists:
+    type:     rest
+    resource: AppBundle\Controller\Api\ListController
+
+notifications:
+    type:     rest
+    resource: AppBundle\Controller\Api\NotificationController
+
+products:
+    type:     rest
+    resource: AppBundle\Controller\Api\ProductController

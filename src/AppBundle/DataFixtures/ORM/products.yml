@@ -1,0 +1,24 @@
+AppBundle\Entity\Product:
+    product{1..25}:
+            Name: <colorName()>
+            Barcode: <ean13()>
+
+    product{25..50}:
+            Name: <colorName()>
+            Barcode: <ean13()>
+            Picture: <imageUrl()>
+
+    redbull:
+            Name: RedBull
+            Barcode: 90162909
+            Picture: http://www.alarotonda-pizza.ch/images/red-bull.jpeg
+
+    florex:
+            Name: Florex
+            Barcode: 8004260437240
+            Picture: <imageUrl()>
+            
+    JusOrange:
+            Name: Orange Juice
+            Barcode: 90162909
+            Picture: https://image.migros.ch/fsicache/server?type=image&source=images%2Fmigros_api%2Fproduct_122022900000.jpg&renderer=original

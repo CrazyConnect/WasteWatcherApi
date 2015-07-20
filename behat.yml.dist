@@ -2,16 +2,16 @@ default:
   calls:
       error_reporting: 16384
   suites:
-      api_features:
+      api:
           paths:    [ %paths.base%/features/api ]
           contexts:
             - FeatureContext
             - ApiFeatureContext
             - Knp\FriendlyContexts\Context\EntityContext
-      web_features:
+      web:
           paths:    [ %paths.base%/features/web ]
           contexts: [ Behat\MinkExtension\Context\MinkContext ]
-      webapp_features:
+      webapp:
           paths:    [ %paths.base%/features/webapp ]
           contexts: [ Behat\MinkExtension\Context\MinkContext ]
   gherkin:

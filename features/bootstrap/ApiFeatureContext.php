@@ -19,6 +19,14 @@ class ApiFeatureContext extends ApiContext
     }
 
     /**
+     * @Given /^scope into the first element$/
+     */
+    public function scopeIntoTheFirstElement()
+    {
+        $this->scope = "array";
+    }
+
+    /**
      * @Given /^scope into the first "([^"]*)" property$/
      */
     public function scopeIntoTheFirstProperty($scope)
@@ -127,6 +135,8 @@ class ApiFeatureContext extends ApiContext
         $payload = $this->getResponsePayload();
         if (! $this->scope) {
             return $payload;
+        } elseif ($this->scope == "array"){
+            return $payload[0];
         }
         return $this->arrayGet($payload, $this->scope);
     }

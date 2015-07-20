@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
 use FOS\UserBundle\Entity\User as BaseUser;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
@@ -23,137 +24,60 @@ class User extends BaseUser
      */
     protected $id;
 
+
+    /**
+     * @ORM\Column(type="simple_array", nullable=true)
+     */
+    protected $deviceIds;
+
+    /**
+     * @return mixed
+     */
+    public function getDeviceIds()
+    {
+        return $this->deviceIds;
+    }
+
+    public function addDevice($id)
+    {
+        $this->deviceIds[] =  $id;
+    }
+
+    public function removeDevice($id)
+    {
+        $key = array_search($id,$this->deviceIds);
+        if($key!==false){
+            unset($this->deviceIds[$key]);
+        }
+    }
+
+
+    /**
+     * @ORM\OneToMany(targetEntity="ItemList", mappedBy="user")
+     */
+    protected $lists;
+
     public function __construct()
     {
         parent::__construct();
         // your own logic
+        $this->lists = new ArrayCollection();
     }
 
     /**
-     * @var string
-     *
-     * @Serializer\Type("string")
-     * @Serializer\Expose
+     * @return mixed
      */
-    protected $username;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="lon", type="float")
-     * @Serializer\Type("float")
-     * @Serializer\Expose
-     */
-    private $lon;
-
-    /**
-     * @var float
-     *
-     * @ORM\Column(name="lat", type="float")
-     * @Serializer\Type("float")
-     * @Serializer\Expose
-     */
-    private $lat;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="hashtag", type="string", length=255)
-     * @Serializer\Type("string")
-     * @Serializer\Expose
-     */
-    private $hashtag;
-
-
-    /**
-     * Get id
-     *
-     * @return integer 
-     */
-    public function getId()
+    public function getLists()
     {
-        return $this->id;
+        return $this->lists;
     }
 
     /**
-     * Set username
-     *
-     * @param string $username
-     * @return User
+     * @param mixed $lists
      */
-    public function setUsername($username)
+    public function setLists($lists)
     {
-        $this->username = $username;
-
-        return $this;
+        $this->lists = $lists;
     }
 
-    /**
-     * Set lon
-     *
-     * @param float $lon
-     * @return User
-     */
-    public function setLon($lon)
-    {
-        $this->lon = $lon;
-
-        return $this;
-    }
-
-    /**
-     * Get lon
-     *
-     * @return float 
-     */
-    public function getLon()
-    {
-        return $this->lon;
-    }
-
-    /**
-     * Set lat
-     *
-     * @param float $lat
-     * @return User
-     */
-    public function setLat($lat)
-    {
-        $this->lat = $lat;
-
-        return $this;
-    }
-
-    /**
-     * Get lat
-     *
-     * @return float 
-     */
-    public function getLat()
-    {
-        return $this->lat;
-    }
-
-    /**
-     * Set hashtag
-     *
-     * @param string $hashtag
-     * @return User
-     */
-    public function setHashtag($hashtag)
-    {
-        $this->hashtag = $hashtag;
-
-        return $this;
-    }
-
-    /**
-     * Get hashtag
-     *
-     * @return string 
-     */
-    public function getHashtag()
-    {
-        return $this->hashtag;
-    }
 }

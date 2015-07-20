@@ -1,0 +1,15 @@
+AppBundle\Entity\Item:
+
+  items{1..10}:
+          name: <colorName()>
+          quantity: <numberBetween(1,6)>
+          expirationDate: <dateTimeBetween("+10day","+30days")>
+          creationDate: <dateTimeBetween("-10day","now")>
+          product: @product<numberBetween(1,50)>
+          list: @ItemList1
+  items{1..10}:
+          name:
+          quantity: <numberBetween(1,6)>
+          expirationDate: <dateTimeBetween("+10day","+30days")>
+          creationDate: <dateTimeBetween("-10day","now")>
+          list: @ItemList2
