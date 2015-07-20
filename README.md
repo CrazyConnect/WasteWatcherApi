@@ -1,11 +1,26 @@
-Base Symfony
+Waste Watcher
 ============
+
+Install
+-------
 
 composer install
 
-npm install
+Api
+---
+/api
 
-bower install
+Basic http authentication
 
 
-A Symfony project created on May 7, 2015, 5:16 pm.
+Doc
+---
+/doc/api
+
+Test
+----
+
+php app/console server:start
+
+bin/behat --suite=api
+
