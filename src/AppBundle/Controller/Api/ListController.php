@@ -19,7 +19,7 @@ class ListController extends FOSRestController implements ClassResourceInterface
     /**
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns a collection of Items",
+     *  description="Return a collection of Items",
      * )
      */
     public function getItemsAction(Request $request, $name)
@@ -35,7 +35,7 @@ class ListController extends FOSRestController implements ClassResourceInterface
     /**
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns an Item",
+     *  description="Return an Item",
      * )
      */
     public function getItemAction(Request $request, $name, $id)
@@ -49,7 +49,7 @@ class ListController extends FOSRestController implements ClassResourceInterface
     /**
      * @ApiDoc(
      *  resource=true,
-     *  description="Updates an Item",
+     *  description="Update an Item",
      *  input="AppBundle\Entity\Item",
      *  output="AppBundle\Entity\Item",
      * )
@@ -84,7 +84,7 @@ class ListController extends FOSRestController implements ClassResourceInterface
     /**
      * @ApiDoc(
      *  resource=true,
-     *  description="Creates an Item",
+     *  description="Create an Item",
      *  input="AppBundle\Entity\Item",
      * )
      */
@@ -112,7 +112,7 @@ class ListController extends FOSRestController implements ClassResourceInterface
     /**
      * @ApiDoc(
      *  resource=true,
-     *  description="Deletes an Item",
+     *  description="Delete an Item",
      * )
      */
     public function deleteItemAction($name, $id)

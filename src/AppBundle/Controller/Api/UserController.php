@@ -20,7 +20,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
     /**
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns a collection of Users",
+     *  description="Return a collection of Users",
      * )
      */
     public function cgetAction()
@@ -63,7 +63,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
 
     /**
      * @ApiDoc(
-     *  description="Returns a collection of Item list",
+     *  description="Return a collection of Item list",
      * )
      */
     public function getListsAction(Request $request, $username)
@@ -81,7 +81,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
 
     /**
      * @ApiDoc(
-     *  description="Creates new List",
+     *  description="Create new List",
      *  input="AppBundle\Entity\ItemList",
      * )
      */
@@ -102,7 +102,7 @@ class UserController extends FOSRestController implements ClassResourceInterface
 
     /**
      * @ApiDoc(
-     *  description="Deletes a List",
+     *  description="Delete a List",
      *  statusCodes={
      *         204="Deleted successfully"
      *  }

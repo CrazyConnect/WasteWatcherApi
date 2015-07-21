@@ -19,7 +19,7 @@ class ProductController extends FOSRestController implements ClassResourceInterf
     /**
      * @ApiDoc(
      *  resource=true,
-     *  description="Returns a collection of Product",
+     *  description="Return a collection of Product",
      *  filters={
      *      {"name"="barcode", "dataType"="string"},
      *  }
@@ -41,7 +41,7 @@ class ProductController extends FOSRestController implements ClassResourceInterf
     /**
      * @ApiDoc(
      *  resource=true,
-     *  description="Creates new Product",
+     *  description="Create new Product",
      *  input="AppBundle\Entity\Product",
      * )
      */
