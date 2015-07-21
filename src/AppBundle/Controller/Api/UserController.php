@@ -36,6 +36,33 @@ class UserController extends FOSRestController implements ClassResourceInterface
 
     /**
      * @ApiDoc(
+     *  resource=true,
+     *  description="Register an User",
+     *  parameters={
+     *      {"name"="username", "dataType"="string", "required"=true, "description"="username"},
+     *      {"name"="email", "dataType"="string", "required"=true, "description"="email"},
+     *      {"name"="password", "dataType"="string", "required"=true, "description"="plain password"}
+     *  }
+     * )
+     */
+    public function postAction(Request $request)
+    {
+        $data = $request->getContent();
+        /** @var $userManager \FOS\UserBundle\Model\UserManagerInterface */
+        $userManager = $this->container->get('fos_user.user_manager');
+        $user = $userManager->createUser();
+        $user->setEnabled(true);
+        $user->setUsername(json_decode($data)->username);
+        $user->setEmail(json_decode($data)->email);
+        $user->setPlainPassword(json_decode($data)->password);
+        $userManager->updateUser($user);
+        $view = $this->view($user, 200);
+
+        return $this->handleView($view);
+    }
+
+    /**
+     * @ApiDoc(
      *  description="Returns a collection of Item list",
      * )
      */
